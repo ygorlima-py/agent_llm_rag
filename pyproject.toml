@@ -1,0 +1,141 @@
+[project]
+name = "environment-python-uv-2025"
+version = "0.1.0"
+description = "environment template"
+readme = "README.md"
+license = "MIT"
+authors = [{ name = "Ygor Lima", email = "ygor.limarsx@gmail.com" }]
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.129.0",
+    "python-dotenv>=1.1.0",
+    "uvicorn[standard]>=0.32.0",
+    "aiosqlite>=0.21.0",
+    "aiosqlite>=0.21.0",
+    "langchain[google-genai]>=1.0.8",
+    "langchain-core>=1.0.7",
+    "langchain-google-genai>=3.1.0",
+    "langchain-ollama>=1.0.0",
+    "langgraph>=1.0.3",
+    "langgraph-checkpoint-postgres>=3.0.1",
+    "langgraph-checkpoint-sqlite>=3.0.0",
+    "rich>=14.2.0",
+    "langchain-openai>=1.1.7",
+    "langgraph-cli[inmem]>=0.4.12",
+    "langchain-text-splitters>=1.1.0",
+    "langchain-community>=0.4.1",
+    "langchain-voyageai>=0.3.2",
+    "transformers>=5.1.0",
+    "langchain-chroma>=1.1.0",
+    "flashrank>=0.2.10",
+    "rank-bm25>=0.2.2",
+]
+
+[project.urls]
+Homepage = "https://portifolio-ygor-lima.vercel.app/"
+
+[project.optional-dependencies]
+dev = ["ruff", "pyright", "pytest", "pytest-xdist"]
+
+[project.scripts]
+chatapp = "chatapp.main:home"
+
+[tool.ruff]
+line-length = 88
+target-version = "py312"
+fix = true
+show-fixes = true
+indent-width = 4
+exclude = ["venv", ".venv", "env", ".env", "node_modules", "__pycache__"]
+
+[tool.ruff.lint]
+select = [
+    "ASYNC",
+    "A",
+    "ANN",
+    "B",
+    "BLE",
+    "C4",
+    "C90",
+    "COM",
+    "E",
+    "EM",
+    "ERA",
+    "EXE",
+    "F",
+    "FBT",
+    "FIX",
+    "I",
+    "ICN",
+    "ISC",
+    "Q",
+    "RET",
+    "RSE",
+    "S",
+    "SIM",
+    "SLF",
+    "T10",
+    "T20",
+    "TC",
+    "TD",
+    "TRY",
+    "UP",
+    "W",
+    "YTT",
+    "RUF",
+    "N",
+]
+ignore = ["T201", "COM812"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**/*.py" = ["ANN201", "S101"]
+
+[tool.ruff.lint.isort]
+# Ensina ao Ruff qual é o pacote principal do seu projeto.
+# Deve ser o mesmo nome da pasta dentro de 'src/'.
+known-first-party = ["my_package"]
+
+# ============================
+# Tipagem (Pyright)
+# ============================
+[tool.pyright]
+typeCheckingMode = "strict"
+pythonVersion = "3.12"
+include = ["src", 'tests']
+exclude = [
+    "**/venv",
+    "**/.venv",
+    "**/env",
+    "**/.env",
+    "**/node_modules",
+    "**/__pycache__",
+]
+venv = ".venv"
+venvPath = "."
+executionEnvironments = [{ root = "src" }]
+
+# ============================
+# Testes (Pytest)
+# ============================
+[tool.pytest.ini_options]
+addopts = "-s --color=yes --tb=short"
+# Adiciona 'src' ao path do Python durante os testes. Isso permite que
+# os testes em `tests/` importem os módulos de `src/` sem erros.
+pythonpath = ["src"]
+testpaths = ["tests"]
+
+# ============================
+# Build e Setuptools
+# ============================
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+# Informa ao setuptools para encontrar os pacotes dentro da pasta 'src'.
+# Essencial para a estrutura de layout com 'src/'.
+where = ["src"]
+
+[tool.setuptools]
+# Mapeia o diretório raiz de pacotes para 'src'.
+package-dir = { "" = "src" }

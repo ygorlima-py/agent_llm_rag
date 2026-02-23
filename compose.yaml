@@ -1,0 +1,50 @@
+services:
+  chatapp:
+    pull_policy: never # Apenas baixar a imagem local
+    image: chatapp # Nome da minha imagem
+    container_name: chatapp # Nome do meu Container
+    hostname: chatapp # Nome do local do meu container
+    restart: unless-stopped # Sempre reiniciar quando o container cair
+    build:
+      context: . # Em qual diretório vai trabalhar
+      dockerfile: Dockerfile # Não precisa más é bom colocar
+      target: development # é 
+    ports:
+      - 8000:8000  # porta exposta / porta interna
+    env_file:
+      - ./env/.env # caminho das variáveis de ambiente
+    depends_on:
+      psql_llm_agent:
+        condition: service_healthy
+    develop:
+      watch: # Assistindo
+        - action: sync+restart # Sincronizar e reestartar o container quando altero o código
+          path: ./src # Assistir o meu projeto inteiro
+          target: /app/src # O Alvo é minha pasta app. Onde ta meu projeto
+
+          ignore:  # Ignora os arquivos para jogar dentro do container
+            - .venv/ 
+            - __pycache__/
+
+        - action: rebuild  # Outra ação assistida na pasta ./uv.lock
+          path: ./uv.lock # Se for instalado algo ele rebuilda
+
+  ################################################################################
+
+  psql_llm_agent:
+    container_name: psql_llm_agent
+    hostname: psql_llm_agent
+    image: postgres:18
+    restart: unless-stopped
+    env_file:
+      - ./env/.env
+    volumes:
+      - ./_data/postgresql:/var/lib/postgresql # Aqui salva os dados do banco quando eu derrubo o container 
+    ports:
+      - 5432:5432
+    healthcheck:  # essa parte aqui é a checagem que meu banco faz antes de se conectar com o chatapp
+      test: ['CMD-SHELL', 'pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
