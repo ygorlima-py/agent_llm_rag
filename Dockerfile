@@ -75,7 +75,7 @@ ENTRYPOINT []
 WORKDIR /app
 
 # Esse comando é execultado no ENTRYPOINT
-CMD ["uvicorn", "--host", "0.0.0.0", "--port", "8000", "--reload", "chatapp.main:app"]
+CMD ["uvicorn", "--host", "0.0.0.0", "--port", "8003", "--reload", "chatapp.main:app"]
 
 
 

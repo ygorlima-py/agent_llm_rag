@@ -20,3 +20,11 @@ async def main(chat: Chat) -> Response:
     result = llm_model.invoke(chat.ask)
     response = Response(answer=result.content) # type: ignore
     return response
+
+
+@app.get('/helth')
+async def health() -> dict[str, str]:
+    return {
+        'status': 'ok',
+    }
+

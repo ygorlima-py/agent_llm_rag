@@ -1,18 +1,25 @@
 services:
   chatapp:
     pull_policy: never # Apenas baixar a imagem local
-    image: chatapp # Nome da minha imagem
-    container_name: chatapp # Nome do meu Container
-    hostname: chatapp # Nome do local do meu container
+    image: ${DC_APP_IMAGE_NAME} # Nome da minha imagem
     restart: unless-stopped # Sempre reiniciar quando o container cair
     build:
       context: . # Em qual diretório vai trabalhar
-      dockerfile: Dockerfile # Não precisa más é bom colocar
+      dockerfile: ${DC_DOCKERFILE} # Não precisa más é bom colocar
       target: development # é 
+      args:
+       - CURRENT_ENV=${CURRENT_ENV}
+    scale: 2
     ports:
-      - 8000:8000  # porta exposta / porta interna
+      - "8003-8004:8003"
     env_file:
-      - ./env/.env # caminho das variáveis de ambiente
+      - .env # caminho das variáveis de ambiente
+    healthcheck: # Verify heatlth container
+      test: ['CMD', 'curl', '--fail', 'http://loaclhost:8003/health'] # Test type
+      interval: 10s 
+      timeout: 2s 
+      retries: 3
+      start_period: 30s
     depends_on:
       psql_llm_agent:
         condition: service_healthy
@@ -37,7 +44,7 @@ services:
     image: postgres:18
     restart: unless-stopped
     env_file:
-      - ./env/.env
+      - .env
     volumes:
       - ./_data/postgresql:/var/lib/postgresql # Aqui salva os dados do banco quando eu derrubo o container 
     ports:
