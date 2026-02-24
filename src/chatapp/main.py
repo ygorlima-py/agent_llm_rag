@@ -25,6 +25,6 @@ async def main(chat: Chat) -> Response:
 @app.get('/health')
 async def health() -> dict[str, str]:
     return {
-        'status': 'ok',
+        'status': 'ok'
     }
 
