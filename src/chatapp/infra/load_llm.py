@@ -1,5 +1,3 @@
-from turtle import mode
-
 from langchain_openai import OpenAIEmbeddings, ChatOpenAI
 from dataclasses import dataclass
 from dotenv import load_dotenv
