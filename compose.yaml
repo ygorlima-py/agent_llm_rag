@@ -41,7 +41,7 @@ services:
   psql_llm_agent:
     container_name: psql_llm_agent
     hostname: psql_llm_agent
-    image: postgres:18
+    image: pgvector/pgvector:pg18
     restart: unless-stopped
     env_file:
       - .env

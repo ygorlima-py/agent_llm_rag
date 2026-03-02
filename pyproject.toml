@@ -31,6 +31,7 @@ dependencies = [
     "rank-bm25>=0.2.2",
     "gunicorn>=25.1.0",
     "pytest>=9.0.2",
+    "langchain-postgres>=0.0.17",
 ]
 
 [project.urls]

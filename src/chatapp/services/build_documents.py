@@ -1,61 +1,41 @@
-from chatapp.schemas.agrofit import FormulatedPrduct
+from chatapp.schemas.agrofit_types import FormulatedPrduct
 from chatapp.infra.embrapa_api import agrofit_products
-from chatapp.schemas.agrofit import convert_json_to_formulated_product
+from chatapp.schemas.agrofit_types import convert_json_to_formulated_product
 from typing import Iterable
 from langchain_core.documents import Document
 from rich import print
 
 def build_agrofit_product_document(product: FormulatedPrduct) -> Document:
     """
-    Serialize a `FormulatedPrduct` instance into a LangChain `Document`.
+    Convert an Agrofit `FormulatedPrduct` into a LangChain `Document`.
 
-    This helper converts a structured product object (typically retrieved from Agrofit/MAPA
-    sources) into a text representation suitable for vector indexing and later retrieval
-    in RAG pipelines (e.g., LangChain/LangGraph). It builds two outputs:
+    Takes a structured product record and turns it into something easy to index and retrieve
+    in a RAG pipeline: a readable text block (`page_content`) plus some useful fields in
+    `metadata` for filtering and traceability.
 
-    **1) page_content**
-    A human-readable, newline-delimited text block containing:
-      - General product information (trade name(s), registration owner, MAPA registration number,
-        agronomic class/category, formulation, active ingredient(s)).
-      - Active ingredient details (chemical group, concentration, unit of measurement, percentage).
-      - Application techniques.
-      - Use indications grouped per crop and target pest (scientific name + common names).
+    What goes into `page_content`:
+    - General product info (trade names, owner, MAPA registration, agronomic class/category,
+    formulation, active ingredients).
+    - Active ingredient details (chemical group, concentration, unit, percentage).
+    - Application techniques.
+    - Use indications per crop and pest (scientific name + common names).
 
-    **2) metadata**
-    A compact dictionary intended for filtering, tracing, and structured retrieval:
-      - `source`: constant identifier for the origin system (e.g., `"agrofit"`).
-      - `number_register`: MAPA registration number.
-      - `trademark`: list of trade names.
-      - `owner_registration`: registration owner name.
-      - `agronomic_category_class`: list of agronomic classes/categories.
-      - `formulation`: formulation code/description.
-      - `active_ingredient`: list of active ingredient strings.
-      - `pest_scientific_name`: list of strings formatted as `"<pest_scientific_name>-<culture>"`,
-        derived from `product.indications_for_use`.
-      - `url_sources`: list of document URLs extracted from `product.documents`.
+    What goes into `metadata`:
+    - `source`: always `"agrofit"`.
+    - `number_register`, `trademark`, `owner_registration`, `agronomic_category_class`,
+    `formulation`, `active_ingredient`.
+    - `pest_scientific_name`: `"<pest>-<culture>"` entries from `product.indications_for_use`.
+    - `url_sources`: URLs from `product.documents`.
 
-    The function is defensive against missing/optional lists by iterating over `or []` and
-    using `"-"` as a placeholder when string fields are absent. Common pest names are joined
-    using `"; "` when provided as a list.
+    The function is tolerant of missing data: it iterates over optional lists using `or []`
+    and uses "-" when a string field is not available. If common pest names come as a list,
+    they are joined with "; ".
 
     Args:
-        product: A `FormulatedPrduct` instance with optional nested fields:
-            - `detail_active_ingredient`
-            - `indications_for_use`
-            - `documents`
-            - and basic product descriptors (e.g., `trademark`, `register_number`, etc.).
+        product: A `FormulatedPrduct` instance coming from Agrofit parsing.
 
     Returns:
-        Document: A LangChain `Document` with:
-            - `page_content` (str): formatted product description for embedding.
-            - `metadata` (dict): structured fields for filtering and provenance.
-
-    Notes:
-        - Ensure `product.active_ingredient`, `product.application_technique`,
-          `product.indications_for_use`, and `product.documents` are consistently typed
-          (lists vs. None) to avoid runtime errors.
-        - The produced content is optimized for semantic search; adjust formatting if you
-          need stricter machine-readable layouts (JSON-like) for downstream parsing.
+        A LangChain `Document` ready to be embedded/indexed.
     """
     detail_ingredient: list[str] = [] 
     for detail in product.detail_active_ingredient or []:
