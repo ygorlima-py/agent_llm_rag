@@ -25,7 +25,7 @@ class Models(ModelsParams):
     def llm_model(self, temperature: float = 0.7) -> ChatOpenAI:
     
         return  ChatOpenAI(
-                model="nvidia/nemotron-nano-12b-v2-vl:free",
+                model="baidu/ernie-4.5-21b-a3b-thinking",
                 base_url=self.base_url,
                 api_key=self.api_key,
                 temperature=temperature,

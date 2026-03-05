@@ -6,7 +6,7 @@ from chatapp.services.build_documents import build_agrofit_iterable_document
 from chatapp.schemas.agrofit_types import convert_json_to_formulated_product
 from chatapp.infra.embrapa_api import agrofit_products
 from chatapp.services.text_splitter import text_spltter_documents
-from chatapp.models.pg_engine import create_async_pg_engine
+from chatapp.models.pg_engine import PGAsyncEngine
 from chatapp.models.vector_stores import PGVectorStoreFactory
 from chatapp.models.constants import CONNECTION_STRING, TABLE_NAME
 from chatapp.infra.load_llm import Models
@@ -28,7 +28,8 @@ async def index_multiple_documents(
     final_page: int,    
     create_table: bool = False,
     ) -> None:
-    pg_engine = create_async_pg_engine(CONNECTION_STRING)
+    pg_async_engine = PGAsyncEngine(connection_str=CONNECTION_STRING)
+    pg_engine = pg_async_engine.create()
     factory = PGVectorStoreFactory(pg_engine=pg_engine)
     model = Models()
     embedding = model.embedding_model()

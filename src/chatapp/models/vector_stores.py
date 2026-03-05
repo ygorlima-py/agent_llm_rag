@@ -54,10 +54,10 @@ class PGVectorStoreFactory:
                 metadata_columns=metadata_columns
             )
             
-    async def create_pg_vector_store(self, table_name:str, embedding: Embeddings) -> PGVectorStore:
+    async def create_pg_vector_store(self, table_name:str, embedding: Embeddings, k:int = 4) -> PGVectorStore:
             hybrid_cfg = HybridSearchConfig()
-            hybrid_cfg.primary_top_k = 8
-            hybrid_cfg.secondary_top_k = 8
+            hybrid_cfg.primary_top_k = 80
+            hybrid_cfg.secondary_top_k = 50 
             
             store = await PGVectorStore.create(
                                 engine=self.pg_engine,
@@ -65,6 +65,7 @@ class PGVectorStoreFactory:
                                 # schema_name=SCHEMA_NAME,
                                 embedding_service=embedding,
                                 hybrid_search_config=hybrid_cfg,
+                                k=k,
                         )
             try:
                 await store.aapply_hybrid_search_index() #type:ignore
