@@ -1,9 +1,46 @@
 import pytest
 from unittest.mock import patch, MagicMock, AsyncMock
 from langchain_core.documents import Document
-
+from fastapi import Request
 from chatapp.services.rag_pipeline import RAGPipeline
+from chatapp.main import telegram_webhook
 
+@pytest.mark.asyncio
+@patch("chatapp.main.BOT_TOKEN", "fake-token")
+@patch("chatapp.main.httpx.AsyncClient")
+@patch("chatapp.main.RAGPipeline")
+async def test_telegram_webhook_send_message(mock_rag_pipeline, mock_async_client):
+    mock_request = AsyncMock(spec=Request)
+    mock_request.json.return_value = {
+        "message": {
+            "chat": {"id": 12345},
+            "text": "Teste no telegram"
+        }
+    }
+
+    mock_pipeline_instance = MagicMock()
+    mock_rag_pipeline.return_value = mock_pipeline_instance
+
+    mock_response = MagicMock()
+    mock_response.content = "Resposta do RAG"
+    mock_pipeline_instance.answer_question = AsyncMock(return_value=mock_response)
+
+    mock_client = AsyncMock()
+    mock_async_client.return_value.__aenter__.return_value = mock_client
+
+    response = await telegram_webhook(mock_request)
+
+    assert response == {"ok": True}
+    mock_pipeline_instance.answer_question.assert_awaited_once_with(
+        question="Teste no telegram"
+    )
+    mock_client.post.assert_awaited_once_with(
+        "https://api.telegram.org/botfake-token/sendMessage",
+        json={
+            "chat_id": 12345,
+            "text": "Resposta do RAG",
+        }
+    )
 
 @patch("chatapp.services.rag_pipeline.AIModels")
 @patch("chatapp.services.rag_pipeline.PGAsyncEngine")
