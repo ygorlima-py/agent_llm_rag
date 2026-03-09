@@ -15,7 +15,7 @@ services:
     env_file:
       - .env # caminho das variáveis de ambiente
     healthcheck: # Verify heatlth container
-      test: ['CMD', 'curl', '--fail', 'http://loaclhost:8003/health'] # Test type
+      test: ['CMD', 'curl', '--fail', 'http://localhost:8003/health'] # Test type
       interval: 10s 
       timeout: 2s 
       retries: 3
@@ -41,7 +41,7 @@ services:
   psql_llm_agent:
     container_name: psql_llm_agent
     hostname: psql_llm_agent
-    image: postgres:18
+    image: pgvector/pgvector:pg18
     restart: unless-stopped
     env_file:
       - .env
