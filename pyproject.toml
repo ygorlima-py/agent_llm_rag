@@ -133,6 +133,11 @@ testpaths = ["tests"]
 requires = ["setuptools", "wheel"]
 build-backend = "setuptools.build_meta"
 
+[dependency-groups]
+dev = [
+    "pytest-asyncio>=1.3.0",
+]
+
 [tool.setuptools.packages.find]
 # Informa ao setuptools para encontrar os pacotes dentro da pasta 'src'.
 # Essencial para a estrutura de layout com 'src/'.

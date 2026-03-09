@@ -1,25 +1,29 @@
 from fastapi import FastAPI
-from pydantic import BaseModel
-from chatapp.infra.load_llm import Models
-from typing import Any
-
-
-
-class Chat(BaseModel):
-    ask: str
-
-class Response(BaseModel):
-    answer: str | list[str | dict[str, Any]]
+from fastapi.middleware.cors import CORSMiddleware
+from chatapp.services.rag_pipeline import RAGPipeline
+from chatapp.schemas.chat_types import Chat, Response
         
 app = FastAPI()
 
+origins = [
+    "http://localhost:5173", 
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["POST", "OPTIONS"],  # ou ["*"]
+    allow_headers=["*"],
+)
+
+
 @app.post("/main")
-async def main(chat: Chat) -> Response:
-    model = Models()
-    llm_model = model.llm_model()
-    result = llm_model.invoke(chat.ask)
-    response = Response(answer=result.content) # type: ignore
-    return response
+async def main(message: Chat) -> Response:
+   pipeline = RAGPipeline()
+   question = str(message)
+   response = await pipeline.answer_question(question=question)
+   return Response(reply=response.content)
 
 
 @app.get('/health')

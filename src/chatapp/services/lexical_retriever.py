@@ -2,7 +2,7 @@ from typing import List
 from chatapp.models.pg_engine import PGAsyncEngine
 from chatapp.models.constants import TABLE_NAME, CONNECTION_STRING
 from chatapp.models.vector_stores import PGVectorStoreFactory
-from chatapp.infra.load_llm import Models
+from chatapp.infra.load_llm import AIModels
 from langchain_core.documents import Document
 from langchain_core.embeddings.embeddings import Embeddings
 from sqlalchemy import text
@@ -106,7 +106,7 @@ class PGVectorLexicalRetriever:
 if __name__ == "__main__":
     pg_async_engine = PGAsyncEngine(connection_str=CONNECTION_STRING)
     pg_engine = pg_async_engine.create()
-    model = Models()
+    model = AIModels()
     embedding = model.embedding_model() 
     factory = PGVectorStoreFactory(pg_engine=pg_engine)
     question = "sabe me dizer se cletodim pega corda de viola"

@@ -63,14 +63,14 @@ class PGVectorMMRRetriever:
 if __name__ == "__main__":
     from chatapp.models.constants import CONNECTION_STRING, TABLE_NAME
     from chatapp.models.pg_engine import PGAsyncEngine
-    from chatapp.infra.load_llm import Models
+    from chatapp.infra.load_llm import AIModels
     import asyncio
     
 
     async def run_cli() -> None:
             async_pg_engine = PGAsyncEngine(connection_str=CONNECTION_STRING)
             pg_engine = async_pg_engine.create()
-            embedding = Models().embedding_model()
+            embedding = AIModels().embedding_model()
             factory = PGVectorStoreFactory(pg_engine=pg_engine)
             
             retriever = PGVectorMMRRetriever(factory=factory,

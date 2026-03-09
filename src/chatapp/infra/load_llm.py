@@ -12,7 +12,7 @@ class ModelsParams:
     base_url: str = "https://openrouter.ai/api/v1"
     api_key: str = OPENROUTER_API_KEY
 
-class Models(ModelsParams):
+class AIModels(ModelsParams):
     
     def embedding_model(self) -> OpenAIEmbeddings:
         return OpenAIEmbeddings(
@@ -32,7 +32,7 @@ class Models(ModelsParams):
                 )
 
 if __name__ == "__main__":
-    model = Models()
+    model = AIModels()
     llm_model = model.llm_model()
     response = llm_model.invoke("Olá LLM")
     print(response)

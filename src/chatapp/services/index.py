@@ -9,7 +9,7 @@ from chatapp.services.text_splitter import text_spltter_documents
 from chatapp.models.pg_engine import PGAsyncEngine
 from chatapp.models.vector_stores import PGVectorStoreFactory
 from chatapp.models.constants import CONNECTION_STRING, TABLE_NAME
-from chatapp.infra.load_llm import Models
+from chatapp.infra.load_llm import AIModels
 
 class IndexVectorStore:
     def __init__(self, vector_store:PGVectorStore ):
@@ -31,7 +31,7 @@ async def index_multiple_documents(
     pg_async_engine = PGAsyncEngine(connection_str=CONNECTION_STRING)
     pg_engine = pg_async_engine.create()
     factory = PGVectorStoreFactory(pg_engine=pg_engine)
-    model = Models()
+    model = AIModels()
     embedding = model.embedding_model()
     
     if create_table:
