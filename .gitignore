@@ -13,6 +13,7 @@ TMP.md
 ssl_conf/
 nginx/conf.d/app.conf
 temp/
+backup_rag.dump
 
 # Environments
 .env
@@ -218,3 +219,4 @@ cython_debug/
 #  refer to https://docs.cursor.com/context/ignore-files
 .cursorignore
 .cursorindexingignore
+backup_rag.dump
