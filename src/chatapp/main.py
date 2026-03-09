@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from chatapp.services.rag_pipeline import RAGPipeline
 from chatapp.schemas.chat_types import Chat, Response
@@ -17,6 +17,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+@app.post("/telegram/webhook")
+async def telegram_webhook(request: Request):
+    data = await request.json()
+    print(data)
+    return {"ok": True}
 
 @app.post("/main")
 async def main(message: Chat) -> Response:
